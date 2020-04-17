@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/lib/myUL.css" rel="stylesheet" type="text/css" />
+</head>
+<body scroll="no" style="overflow-x: hidden;">
+    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">
+
+    <ul id="myUL">
+    </ul>
+    <script>
+
+        function myFunction() {
+
+            $(document).ready(function () {
+                $("#myInput").on("change paste keyup", function () {
+                    e.preventDefault();
+                    $.ajax({
+                        url: "http://localhost:5001/api/ElasticSearch/" + $(this).val(),
+                        method: "GET",
+                        success: function (data) {
+                            listData(data);
+                        }
+                    })
+                });
+            });
+
+            var listData = function (data) {
+                $("#myUL").append("<li>" +
+                    data["firstName"] +
+                    "</li>");
+            };
+        }
+
+    </script>
+</body>
+</html>

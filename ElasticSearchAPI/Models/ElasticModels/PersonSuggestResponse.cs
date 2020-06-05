@@ -7,6 +7,6 @@ namespace ElasticSearchAPI.Models.ElasticModels
 {
     public class PersonSuggestResponse
     {
-        public IEnumerable<PersonElasticModel> Suggests { get; set; }
+        public List<PersonElasticModel> Suggests { get; set; }
     }
 }

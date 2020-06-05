@@ -18,23 +18,19 @@ namespace ElasticSearchAPI.Infrastructure
         public void Indexing(IRepository people)
         {
 
-            if (elasticClient.Indices.Exists("people").Exists)
+            if (!elasticClient.Indices.Exists("people").Exists)
             {
-                elasticClient.Indices.Delete("people");
+                elasticClient.Indices.Create("people", d => d.Map<PersonElasticModel>(map => map.AutoMap().Properties(prop => prop.Completion(c => c.Name(n => n.Suggest)))));
+
+                var _people = people.Persons.Select(p => new PersonElasticModel
+                {
+                    Id = p.Id,
+                    FirstName = p.FirstName,
+                });
+
+
+                elasticClient.IndexMany(_people, "people");
             }
-
-            elasticClient.Indices.Create("people", d => d.Map<PersonElasticModel>(
-                map => map.AutoMap().Properties(prop => prop.Completion(c => c.Name(n => n.Suggest))
-                    )));
-
-            var _people = people.Persons.Select(p => new PersonElasticModel
-            {
-                Id = p.Id,
-                FirstName = p.FirstName,
-            });
-
-
-            elasticClient.IndexMany(_people, "people");
         }
 
         public PersonSuggestResponse Suggest(string keyword)
@@ -46,7 +42,7 @@ namespace ElasticSearchAPI.Infrastructure
                             .Prefix(keyword)
                             .Fuzzy(f => f
                                 .Fuzziness(Fuzziness.Auto)
-                            ).Size(1000)
+                            ).Size(20)
                         )
                     ));
 
@@ -61,7 +57,7 @@ namespace ElasticSearchAPI.Infrastructure
 
             return new PersonSuggestResponse
             {
-                Suggests = suggestions
+                Suggests = suggestions.ToList()
             };
         }
     }

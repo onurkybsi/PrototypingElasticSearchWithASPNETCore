@@ -2,11 +2,7 @@
 using ElasticSearchAPI.Models;
 using ElasticSearchAPI.Models.ElasticModels;
 using Microsoft.AspNetCore.Mvc;
-using Nest;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ElasticSearchAPI.Controllers
 {
@@ -20,11 +16,11 @@ namespace ElasticSearchAPI.Controllers
         {
             _elasticSearch = elasticSearch;
 
-            //_elasticSearch.Indexing(repository);
+            _elasticSearch.Indexing(repository);
         }
 
         [HttpGet("{keyword}")]
-        public IEnumerable<PersonElasticModel> Get(string keyword)
+        public List<PersonElasticModel> Get(string keyword)
         {
             return _elasticSearch.Suggest(keyword).Suggests;
         }
